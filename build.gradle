@@ -28,7 +28,7 @@ jar { from('LICENSE') { rename { "LICENSE_smart-survival" } } }
 tasks.register('apiReport') {
     doLast {
         def cp = sourceSets.client.compileClasspath.asPath
-        def classes = [
+        def classes = ['net.minecraft.client.gui.screens.recipebook.RecipeCollection','net.minecraft.world.item.crafting.display.RecipeDisplayEntry','net.minecraft.client.player.LocalPlayer','net.minecraft.client.multiplayer.MultiPlayerGameMode','net.minecraft.world.item.crafting.display.SlotDisplay$Empty','net.minecraft.world.item.crafting.display.SlotDisplay$WithRemainder','net.minecraft.core.registries.BuiltInRegistries','net.minecraft.core.DefaultedRegistry','net.minecraft.client.input.KeyEvent','net.minecraft.client.input.MouseButtonInfo',
             'net.minecraft.client.gui.GuiGraphicsExtractor', 'net.minecraft.client.gui.screens.Screen',
             'net.minecraft.client.gui.components.EditBox', 'net.minecraft.client.input.MouseButtonEvent',
             'net.minecraft.client.gui.components.events.GuiEventListener',
