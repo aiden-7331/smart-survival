@@ -1,0 +1,52 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+version = project.mod_version
+group = project.maven_group
+base { archivesName = 'smart-survival' }
+repositories { mavenCentral() }
+loom {
+    splitEnvironmentSourceSets()
+    mods { 'smart-survival' { sourceSet sourceSets.main; sourceSet sourceSets.client } }
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand version: project.version }
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(25); withSourcesJar() }
+tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8' }
+test { useJUnitPlatform() }
+jar { from('LICENSE') { rename { "LICENSE_smart-survival" } } }
+tasks.register('apiReport') {
+    doLast {
+        def cp = sourceSets.client.compileClasspath.asPath
+        def classes = [
+            'net.minecraft.client.gui.GuiGraphicsExtractor', 'net.minecraft.client.gui.screens.Screen',
+            'net.minecraft.client.gui.components.EditBox', 'net.minecraft.client.input.MouseButtonEvent',
+            'net.minecraft.client.gui.components.events.GuiEventListener',
+            'net.minecraft.client.ClientRecipeBook', 'net.minecraft.client.multiplayer.ClientPacketListener',
+            'net.minecraft.world.item.crafting.display.RecipeDisplay',
+            'net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay',
+            'net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay',
+            'net.minecraft.world.item.crafting.display.FurnaceRecipeDisplay',
+            'net.minecraft.world.item.crafting.display.SlotDisplay',
+            'net.minecraft.world.item.crafting.display.SlotDisplayContext',
+            'net.minecraft.world.item.crafting.RecipeDisplayEntry',
+            'net.minecraft.world.entity.player.Inventory',
+            'net.minecraft.client.gui.screens.inventory.AbstractContainerScreen',
+            'net.minecraft.client.gui.Gui'
+        ]
+        classes.each { c ->
+            println "API_CLASS " + c
+            providers.exec { commandLine "${System.getProperty('java.home')}/bin/javap", '-classpath', cp, c; ignoreExitValue = true }.standardOutput.asText.get().with { print it }
+        }
+    }
+}

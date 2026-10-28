@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "smart-survival",
+  "version": "${version}",
+  "name": "Smart Survival",
+  "description": "Thoughtful survival planning, built around what you carry.",
+  "authors": [
+    "aiden-7331"
+  ],
+  "contact": {
+    "sources": "https://github.com/aiden-7331/smart-survival",
+    "issues": "https://github.com/aiden-7331/smart-survival/issues"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.smartsurvival.client.SmartSurvivalClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": ">=0.165.0+26.3"
+  }
+}
