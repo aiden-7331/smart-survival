@@ -52,7 +52,7 @@ public final class SmartSurvivalClient implements ClientModInitializer {
             Identifier.fromNamespaceAndPath("smart-survival", "widgets"),
             (graphics, delta) -> {
                 Minecraft mc = Minecraft.getInstance();
-                if (mc.player != null && settings.hud && mc.gui.screen() == null && !mc.options.hideGui)
+                if (mc.player != null && settings.hud && mc.gui.screen() == null)
                     HudRenderer.drawAll(graphics, this, false, null);
             });
         LOG.info("Smart Survival initialized");
@@ -161,7 +161,7 @@ public final class SmartSurvivalClient implements ClientModInitializer {
     }
     public void blockedDrop() {
         var p = Minecraft.getInstance().player;
-        if (p != null) p.displayClientMessage(Component.literal("Favourite protected. Unfavourite it in Smart Survival to drop it."),true);
+        if (p != null) p.sendOverlayMessage(Component.literal("Favourite protected. Unfavourite it in Smart Survival to drop it."));
     }
     public static void upsert(List<Goal> list, Goal goal) {
         for (int i=0;i<list.size();i++) if (list.get(i).item().equals(goal.item())) { list.set(i,goal); return; }
