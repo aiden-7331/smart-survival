@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "dev.smartsurvival.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "FavouriteDropMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

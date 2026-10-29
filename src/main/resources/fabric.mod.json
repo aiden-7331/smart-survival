@@ -23,5 +23,11 @@
     "minecraft": "~26.3",
     "java": ">=25",
     "fabric-api": ">=0.165.0+26.3"
-  }
+  },
+  "mixins": [
+    {
+      "config": "smart-survival.client.mixins.json",
+      "environment": "client"
+    }
+  ]
 }
