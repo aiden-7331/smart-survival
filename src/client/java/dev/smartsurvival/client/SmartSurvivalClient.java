@@ -119,7 +119,15 @@ public final class SmartSurvivalClient implements ClientModInitializer {
             settings.presets.getOrDefault(settings.activePreset,List.of()).forEach(g -> needed.add(g.item()));
             settings.plans.forEach(g -> needed.add(g.item()));
             try {
-                plan = catalog.planner().plan(settings.plans, craftingCounts, settings.recipeChoices);
+                // Special, equipped and favourite finished outputs still satisfy targets;
+                // they simply cannot be spent as ingredients.
+                List<Goal> outstanding = new ArrayList<>();
+                for (Goal target : settings.plans) {
+                    int protectedHave = Math.max(0, counts.getOrDefault(target.item(),0) - craftingCounts.getOrDefault(target.item(),0));
+                    int left = target.missing(protectedHave);
+                    if (left > 0) outstanding.add(new Goal(target.item(),left));
+                }
+                plan = catalog.planner().plan(outstanding, craftingCounts, settings.recipeChoices);
                 needed.addAll(plan.missing().keySet());
             } catch (RuntimeException ex) {
                 LOG.error("Could not calculate crafting plan",ex);

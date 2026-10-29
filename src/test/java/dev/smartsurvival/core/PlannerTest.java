@@ -64,6 +64,12 @@ class PlannerTest {
         var r=plan(List.of(recipe("planks","planks",4,in(1,"log"))),List.of(goal("planks",1_000_000)),Map.of());
         assertEquals(Map.of(id("log"),250_000L),r.missing());assertFalse(r.limited());
     }
+    @Test void depthBudgetFallsBackWithoutSpendingStock(){
+        List<Planner.Recipe> chain=new ArrayList<>();
+        for(int i=0;i<30;i++)chain.add(recipe("r"+i,"part"+i,1,in(1,"part"+(i+1))));
+        var r=plan(chain,List.of(goal("part0",1)),Map.of());
+        assertTrue(r.limited());assertEquals(Map.of(id("part0"),1L),r.missing());
+    }
     @Test void unknownRecipeIsAnExplicitMaterial(){
         assertEquals(Map.of(id("unknown"),4L),plan(List.of(),List.of(goal("unknown",4)),Map.of()).missing());
     }

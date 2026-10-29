@@ -34,9 +34,9 @@ jobs:
           LIBGL_ALWAYS_SOFTWARE: 'true'
           SDL_VIDEODRIVER: x11
           ALSOFT_DRIVERS: 'null'
-      - name: Verify Minecraft API
+      - name: Summarize tests and screenshots
         if: always()
-        run: bash gradlew apiReport --console=plain
+        run: python3 scripts/verification-report.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

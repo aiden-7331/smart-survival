@@ -35,7 +35,12 @@ public final class Settings {
         nearFullSlots = Math.max(0, Math.min(12, nearFullSlots));
         goals = clean(goals); plans = clean(plans);
         if (recipeChoices == null) recipeChoices = new TreeMap<>();
-        recipeChoices.entrySet().removeIf(e -> e.getKey() == null || e.getValue() == null);
+        recipeChoices.entrySet().removeIf(e -> e.getKey() == null || e.getValue() == null || e.getKey().length()>256 || e.getValue().length()>256);
+        if (recipeChoices.size()>1024) {
+            Map<String,String> bounded=new TreeMap<>();
+            recipeChoices.entrySet().stream().sorted(Map.Entry.comparingByKey()).limit(1024).forEach(e->bounded.put(e.getKey(),e.getValue()));
+            recipeChoices=bounded;
+        }
         if (favorites == null) favorites = new TreeSet<>();
         favorites.removeIf(s -> s == null || !s.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"));
         favorites = new TreeSet<>(favorites.stream().limit(1024).toList());

@@ -91,11 +91,35 @@ public final class SurvivalClientTest implements FabricClientGameTest {
                 menu.setCarried(ItemStack.EMPTY);
                 check(app.store.save(app.settings),"Settings write");
                 check(app.store.load().goals.equals(app.settings.goals),"Settings reload");
+                app.settings.plans.clear();app.settings.plans.add(new Goal("minecraft:iron_pickaxe",1));
+                app.invalidate();app.refresh(mc);
+                check(app.plan.missing().isEmpty()&&app.plan.steps().isEmpty(),"Carried favourite satisfies finished target");
+            });
+            world.getServer().runCommand("give @p minecraft:oak_log 16");
+            world.getServer().runCommand("item replace entity @p weapon.offhand with minecraft:torch 8");
+            context.waitFor(mc->{
+                var app=SmartSurvivalClient.INSTANCE;
+                return app.counts.getOrDefault("minecraft:oak_log",0)==32 && app.counts.getOrDefault("minecraft:torch",0)==8;
             });
             MixinEnvironment.getCurrentEnvironment().audit();
         }
         context.waitTicks(5);
         context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.counts.isEmpty(),"Disconnect clears inventory"));
+        // Separate server connection: production mod has no server entrypoint.
+        try(var server=context.worldBuilder().createServer()) {
+            try(var connection=server.connect()) {
+                server.runCommand("give @p minecraft:oak_log 4");
+                server.runCommand("recipe give @p *");
+                context.waitFor(mc->SmartSurvivalClient.INSTANCE.counts.getOrDefault("minecraft:oak_log",0)==4);
+                context.runOnClient(mc->{
+                    var app=SmartSurvivalClient.INSTANCE;
+                    app.settings.plans.clear();app.settings.plans.add(new Goal("minecraft:crafting_table",1));
+                    app.invalidate();app.refresh(mc);
+                    check(app.plan.missing().isEmpty()&&!app.plan.steps().isEmpty(),"Separate server recipe planning");
+                });
+                connection.waitForChunksRender();
+            }
+        }
     }
     private static void check(boolean value,String message){if(!value)throw new AssertionError(message);}
 }

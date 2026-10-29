@@ -75,7 +75,8 @@ public final class Planner {
         if (amount < 0 || amount > 1_000_000_000L) throw new Limit();
         amount = state.consume(item, amount);
         if (amount == 0) return;
-        if (depth > 24 || path.contains(item)) {
+        if (depth > 24) throw new Limit();
+        if (path.contains(item)) {
             state.missing.merge(item, amount, Long::sum);
             state.notes.add("A recipe cycle was stopped; collect the listed material directly.");
             return;
