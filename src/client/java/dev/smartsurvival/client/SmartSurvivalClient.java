@@ -96,24 +96,26 @@ public final class SmartSurvivalClient implements ClientModInitializer {
             if (!inventoryChanged && !ItemStack.matches(previous.get(i),stack)) inventoryChanged = true;
             snapshot.add(stack.copy());
         }
+        // Recount the small carried inventory every sample. Change detection only
+        // controls expensive planning/advice, never whether displayed counts refresh.
+        Map<String,Integer> all = new TreeMap<>(), craft = new TreeMap<>();
+        List<InventoryAnalysis.Stack> main = new ArrayList<>();
+        int availableSlots=0;
+        for (int i=0;i<snapshot.size();i++) {
+            ItemStack stack=snapshot.get(i);
+            if(i<36 && stack.isEmpty())availableSlots++;
+            if(stack.isEmpty())continue;
+            String id=ItemsView.id(stack);
+            all.merge(id,stack.getCount(),Integer::sum);
+            if(i<36 && Inventory.isUsableForCrafting(stack) && !settings.favorites.contains(id))
+                craft.merge(id,stack.getCount(),Integer::sum);
+            if(i<36)main.add(new InventoryAnalysis.Stack(id,stack.getCount(),stack.getMaxStackSize(),stack.isDamageableItem(),!stack.getComponentsPatch().isEmpty()));
+        }
+        boolean totalsChanged=!all.equals(counts)||!craft.equals(craftingCounts)||availableSlots!=freeSlots;
+        counts=Map.copyOf(all);craftingCounts=Map.copyOf(craft);freeSlots=availableSlots;
+        previous=snapshot;
         boolean recipesChanged = catalog.refresh(client);
-        if (inventoryChanged || dirty || recipesChanged) {
-            previous = snapshot;
-            Map<String,Integer> all = new TreeMap<>(), craft = new TreeMap<>();
-            List<InventoryAnalysis.Stack> main = new ArrayList<>();
-            freeSlots = 0;
-            for (int i=0;i<snapshot.size();i++) {
-                ItemStack s = snapshot.get(i);
-                if (i < 36 && s.isEmpty()) freeSlots++;
-                if (s.isEmpty()) continue;
-                String id = ItemsView.id(s);
-                all.merge(id,s.getCount(),Integer::sum);
-                if (i < 36 && Inventory.isUsableForCrafting(s) && !settings.favorites.contains(id))
-                    craft.merge(id,s.getCount(),Integer::sum);
-                if (i < 36) main.add(new InventoryAnalysis.Stack(id,s.getCount(),s.getMaxStackSize(),s.isDamageableItem(),
-                    !s.getComponentsPatch().isEmpty()));
-            }
-            counts = Map.copyOf(all); craftingCounts = Map.copyOf(craft);
+        if (inventoryChanged || totalsChanged || dirty || recipesChanged) {
             Set<String> needed = new HashSet<>();
             settings.goals.forEach(g -> needed.add(g.item()));
             settings.presets.getOrDefault(settings.activePreset,List.of()).forEach(g -> needed.add(g.item()));

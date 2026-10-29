@@ -10,7 +10,7 @@ import java.time.Instant;
 import static java.nio.file.StandardCopyOption.*;
 
 public final class SettingsStore {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().serializeSpecialFloatingPointValues().setPrettyPrinting().create();
     private final Path file;
     private String warning = "";
     private boolean readOnly;
@@ -46,10 +46,12 @@ public final class SettingsStore {
         if (readOnly) return false;
         Path temp = null;
         try {
-            value.normalize();
+            // Normalize a detached snapshot: open editors may hold references to live lists.
+            Settings snapshot = GSON.fromJson(GSON.toJsonTree(value), Settings.class);
+            snapshot.normalize();
             Files.createDirectories(file.toAbsolutePath().getParent());
             temp = Files.createTempFile(file.toAbsolutePath().getParent(), "smart-survival-", ".tmp");
-            byte[] bytes = GSON.toJson(value).getBytes(StandardCharsets.UTF_8);
+            byte[] bytes = GSON.toJson(snapshot).getBytes(StandardCharsets.UTF_8);
             try (FileChannel channel = FileChannel.open(temp, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
                 ByteBuffer buffer = ByteBuffer.wrap(bytes);
                 while (buffer.hasRemaining()) channel.write(buffer);

@@ -43,6 +43,7 @@ public final class SurvivalClientTest implements FabricClientGameTest {
             context.getInput().typeChars("cobblestone");
             context.waitTicks(2);
             context.clickScreenButton("Cobblestone");
+            context.clickScreenButton("Save");
             context.waitForScreen(DashboardScreen.class);
             context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.settings.goals.stream().anyMatch(g->g.item().equals("minecraft:cobblestone")&&g.amount()==64),"Item picker saves searched goal"));
             context.clickScreenButton("Pack");context.clickScreenButton("Manage");context.clickScreenButton("New preset");

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2 — Quantity editing and resource refresh
+
+- Add explicit Save and Cancel controls to item/quantity editors across goals, crafting plans and preparation checklists.
+- Keep the selected item and typed quantity through window resizing.
+- Normalize a detached settings snapshot when saving, preserving references used by open editors.
+- Recount carried resources on every inventory sample, independently of cached stack comparisons.
+- Add real mouse/keyboard tests for editing and saving quantities, cancellation and invalid quantities, plus Acacia Boat pickup, hotbar, removal and creative-mode HUD checks.
+- Retain Minecraft 26.3 and Fabric Loader 0.19.5 compatibility.
+
+
 ## 1.0.1 — Loader compatibility
 
 - Lower the declared and build-time Fabric Loader minimum from 0.20.1 to 0.19.5.

@@ -37,6 +37,21 @@ class SettingsStoreTest {
         assertEquals(1.75,s.widgets.get("Resources").scale);assertEquals(.15,s.widgets.get("Resources").opacity);
         assertEquals(5,s.widgets.size());assertTrue(s.goals.isEmpty());assertFalse(s.presets.isEmpty());
     }
+    @Test void savingDoesNotDetachOpenEditors(){
+        Settings s=new Settings();SettingsStore store=new SettingsStore(dir.resolve("settings.json"));
+        var goals=s.goals;var plans=s.plans;var preset=s.presets.get("Mining");var widget=s.widgets.get("Resources");
+        assertTrue(store.save(s));
+        assertSame(goals,s.goals);assertSame(plans,s.plans);assertSame(preset,s.presets.get("Mining"));assertSame(widget,s.widgets.get("Resources"));
+        goals.add(new Goal("minecraft:acacia_boat",7));
+        assertTrue(store.save(s));
+        assertEquals(7,store.load().goals.getFirst().amount());
+    }
+    @Test void sanitizesSnapshotWithoutChangingLivePreferences(){
+        Settings s=new Settings();s.widgets.get("Resources").scale=20;
+        SettingsStore store=new SettingsStore(dir.resolve("settings.json"));assertTrue(store.save(s));
+        assertEquals(20,s.widgets.get("Resources").scale);
+        assertEquals(1.75,store.load().widgets.get("Resources").scale);
+    }
     @Test void keepsLastGoodBackup()throws Exception{
         Path path=dir.resolve("settings.json");SettingsStore store=new SettingsStore(path);Settings s=new Settings();
         assertTrue(store.save(s));String original=Files.readString(path);s.hud=false;assertTrue(store.save(s));

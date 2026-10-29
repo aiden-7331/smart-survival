@@ -26,6 +26,12 @@ Visual review of run 7 confirmed legible dashboard controls and separate resourc
 
 Version 1.0.1 builds and runs client integration tests using Fabric Loader 0.19.5. The production metadata accepts that same minimum; this avoids declaring support solely by editing the dependency check. The earlier 1.0.0 baseline used Loader 0.20.1. Check the successful 1.0.1 workflow before installing its artifact.
 
+## Quantity and tracking regressions
+
+Version 1.0.2 includes a second Minecraft scenario using Acacia Boats, matching the reported item. It checks inventory and HUD counts after pickup, a hotbar slot replacement and removal, plus creative-mode acquisition. It uses mouse input and keyboard deletion/typing to edit quantities, checks persisted goal/crafting/preparation values, and exercises Cancel, invalid input and a compact window resize. Two additional settings tests verify that saving preserves live editor references and sanitizes only the persisted snapshot.
+
+The original Acacia Boat pickup/hotbar/removal scenario passed before the refresh change; the user's stuck-zero state has not been reproduced in the isolated test environment. The count refresh now runs independently of snapshot change detection. Modpack-specific behavior remains unverified.
+
 ## Release gate
 
 Compilation, unit tests and client integration tests must succeed for the release commit. Passing compilation alone is not treated as an in-game verification.

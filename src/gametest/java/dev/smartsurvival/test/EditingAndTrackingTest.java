@@ -34,19 +34,71 @@ public final class EditingAndTrackingTest implements FabricClientGameTest {
             context.clickScreenButton("Goals");
             context.clickScreenButton("Acacia Boat × 64");
             editQuantity(context,"12");
-            context.clickScreenButton("Acacia Boat");
+            context.clickScreenButton("Save");
             context.waitForScreen(DashboardScreen.class);
             assertAmount(context,12);
-            System.out.println("REGRESSION_PASS quantity mouse editing and item-row save");
+            System.out.println("REGRESSION_PASS quantity mouse editing and explicit save");
 
             context.clickScreenButton("Acacia Boat × 12");
             editQuantity(context,"7");
             // Saving another preference while an editor is open must not detach its list.
             context.runOnClient(mc->SmartSurvivalClient.INSTANCE.changed());
-            context.clickScreenButton("Acacia Boat");
+            context.clickScreenButton("Save");
             context.waitForScreen(DashboardScreen.class);
             assertAmount(context,7);
             System.out.println("REGRESSION_PASS quantity save after another preference save");
+            context.clickScreenButton("Acacia Boat × 7");
+            editQuantity(context,"0");
+            context.clickScreenButton("Save");
+            context.waitForScreen(ItemPickerScreen.class);
+            context.clickScreenButton("Cancel");
+            context.waitForScreen(DashboardScreen.class);
+            assertAmount(context,7);
+
+            // Editing remains valid after a resize at a small GUI size.
+            context.clickScreenButton("Acacia Boat × 7");
+            editQuantity(context,"9");
+            context.getInput().resizeWindow(640,480);
+            context.waitTicks(4);context.takeScreenshot("quantity-editor-small");
+            context.clickScreenButton("Save");
+            context.waitForScreen(DashboardScreen.class);
+            assertAmount(context,9);
+            context.setScreen(()->null);
+            context.waitTicks(15);context.takeScreenshot("acacia-resource-count");
+            context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.lines("Resources").getFirst().detail().startsWith("2 / 9"),"HUD uses edited target"));
+
+            world.getServer().runCommand("recipe give @p *");
+            context.waitTicks(30);
+            context.setScreen(()->new DashboardScreen(SmartSurvivalClient.INSTANCE));
+            context.clickScreenButton("Plan");context.clickScreenButton("Add target");
+            context.getInput().typeChars("crafting_table");context.clickScreenButton("Crafting Table");
+            editQuantity(context,"5");context.clickScreenButton("Save");
+            context.waitForScreen(DashboardScreen.class);
+            context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.settings.plans.getFirst().amount()==5,"Crafting quantity saved"));
+            context.clickScreenButton("Crafting Table × 5");editQuantity(context,"11");context.clickScreenButton("Save");
+            context.waitForScreen(DashboardScreen.class);
+            context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.store.load().plans.getFirst().amount()==11,"Crafting quantity edit persisted"));
+
+            context.clickScreenButton("Pack");context.clickScreenButton("+ Item");
+            context.getInput().typeChars("acacia_boat");context.clickScreenButton("Acacia Boat");
+            editQuantity(context,"6");context.clickScreenButton("Save");
+            context.waitForScreen(DashboardScreen.class);
+            context.runOnClient(mc->{
+                var settings=SmartSurvivalClient.INSTANCE.store.load();
+                check(settings.presets.get(settings.activePreset).stream().anyMatch(g->g.item().equals("minecraft:acacia_boat")&&g.amount()==6),"Preparation quantity saved");
+            });
+            System.out.println("REGRESSION_PASS goal, crafting and preparation quantities; invalid values; cancel; resize");
+            // Creative inventory changes use the same inventory-only counting path.
+            context.setScreen(()->null);
+            world.getServer().runCommand("gamemode creative @p");
+            world.getServer().runCommand("give @p minecraft:acacia_boat 1");
+            context.waitTicks(30);
+            context.runOnClient(mc->{
+                var app=SmartSurvivalClient.INSTANCE;
+                check(app.counts.getOrDefault("minecraft:acacia_boat",0)==3,"Creative inventory count");
+                check(app.lines("Resources").getFirst().detail().startsWith("3 / 9"),"Creative HUD count");
+            });
+            System.out.println("REGRESSION_PASS creative inventory and HUD counts");
         }
     }
     private static void assertBoatCount(ClientGameTestContext context,int expected) {
@@ -73,7 +125,8 @@ public final class EditingAndTrackingTest implements FabricClientGameTest {
         });
         context.getInput().setCursorPos(pos[0],pos[1]);
         context.getInput().pressMouse(SDLMouse.SDL_BUTTON_LEFT);
-        context.getInput().holdControl();context.getInput().pressKey(SDLScancode.SDL_SCANCODE_A);context.getInput().releaseControl();
+        context.getInput().pressKey(SDLScancode.SDL_SCANCODE_END);
+        for(int i=0;i<7;i++)context.getInput().pressKey(SDLScancode.SDL_SCANCODE_BACKSPACE);
         context.getInput().typeChars(value);context.waitTicks(12);
         context.runOnClient(mc->{
             var box=mc.gui.screen().children().stream().filter(w->w instanceof EditBox e&&e.getMessage().getString().equals("Quantity")).map(w->(EditBox)w).findFirst().orElseThrow();

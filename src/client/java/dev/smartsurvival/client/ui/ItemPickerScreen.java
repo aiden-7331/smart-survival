@@ -17,6 +17,8 @@ public final class ItemPickerScreen extends PanelScreen {
     private final String initial;
     private final int initialAmount;
     private EditBox search, amount;
+    private Button save;
+    private String selected;
     private final List<Button> rows=new ArrayList<>();
     private List<String> items=List.of();
     private int page;
@@ -24,13 +26,15 @@ public final class ItemPickerScreen extends PanelScreen {
     public ItemPickerScreen(Screen parent, String title, Predicate<String> allowed, Consumer<Goal> accept, Goal existing) {
         super(title);this.parent=parent;this.allowed=allowed;this.accept=accept;
         initial=existing==null?"":existing.item();initialAmount=existing==null?64:existing.amount();
+        selected=existing==null?null:existing.item();
     }
     @Override protected void init() {
         layout();
         String query=search==null?initial:search.getValue(), qty=amount==null?""+initialAmount:amount.getValue();
         search=field("Search name or item ID",left+10,48,panelWidth-20,query);
         amount=field("Quantity",left+80,height-38,80,qty);amount.setMaxLength(7);
-        button("Back",left+panelWidth-80,height-38,70,this::onClose);
+        save=button("Save",left+166,height-38,60,this::save);
+        button("Cancel",left+panelWidth-70,height-38,60,this::onClose);
         button("<",left+10,height-64,30,()->{page=Math.max(0,page-1);updateRows();});
         button(">",left+panelWidth-40,height-64,30,()->{page=Math.min(Math.max(0,(items.size()-1)/rows.size()),page+1);updateRows();});
         rows.clear();
@@ -47,16 +51,25 @@ public final class ItemPickerScreen extends PanelScreen {
     private void updateRows() {
         for(int i=0;i<rows.size();i++) {
             int n=page*rows.size()+i;Button b=rows.get(i);b.visible=n<items.size();
-            if(b.visible)b.setMessage(Component.literal(fit(ItemsView.name(items.get(n)),panelWidth-52)));
+            if(b.visible) {
+                String id=items.get(n);
+                b.setMessage(Component.literal(fit((id.equals(selected)?"✓ ":"")+ItemsView.name(id),panelWidth-52)));
+            }
         }
+        save.active=selected!=null;
+        if(selected!=null)save.setTooltip(Tooltip.create(Component.literal("Save "+ItemsView.name(selected)+" with the entered quantity")));
     }
     private void select(int row) {
         int n=page*rows.size()+row;if(n>=items.size())return;
-        try { accept.accept(new Goal(items.get(n),Integer.parseInt(amount.getValue())));onClose(); }
+        selected=items.get(n);error="";updateRows();
+    }
+    private void save() {
+        if(selected==null)return;
+        try { accept.accept(new Goal(selected,Integer.parseInt(amount.getValue().trim())));onClose(); }
         catch(IllegalArgumentException ex) { error="Enter a quantity from 1 to 1,000,000."; }
     }
     @Override public void extractRenderState(GuiGraphicsExtractor g,int mx,int my,float delta) {
-        frame(g,"Search, enter a quantity, then select an item.");
+        frame(g,"Select an item, enter its quantity, then Save.");
         super.extractRenderState(g,mx,my,delta);
         for(int i=0;i<rows.size();i++) {
             int n=page*rows.size()+i;if(n<items.size()) {
