@@ -81,7 +81,8 @@ public final class DashboardScreen extends PanelScreen {
             add(null,"Recipe coverage",app.catalog.supported()+" supported displays • "+app.catalog.skipped()+" unsupported",null);
         } else if(mode==1) {
             app.plan.missing().forEach((id,n)->entries.add(new Row(id,ItemsView.name(id)+" • need "+n,"Additional items after allocating carried materials",HudRenderer.GOLD,null,"Pin",()->{SmartSurvivalClient.upsert(app.settings.goals,new Goal(id,(int)Math.min(Goal.MAX_AMOUNT,n+app.counts.getOrDefault(id,0))));change();})));
-            if(app.plan.missing().isEmpty())add(null,app.plan.steps().isEmpty()?"Targets satisfied":"Materials ready",app.plan.steps().isEmpty()?"Add a target to start planning.":"Open Steps to see the remaining crafts.",null);
+            if(app.plan.missing().isEmpty()&&app.plan.limited())add(null,"Planning needs attention","Read the planner notice below before collecting materials.",null);
+            else if(app.plan.missing().isEmpty())add(null,app.plan.steps().isEmpty()?"Targets satisfied":"Materials ready",app.plan.steps().isEmpty()?"Add a target to start planning.":"Open Steps to see the remaining crafts.",null);
         } else {
             for(var step:app.plan.steps())add(step.item(),ItemsView.name(step.item())+" • "+step.crafts()+" craft(s)",step.station()+(app.catalog.cooking(step.recipe())?" • fuel needed separately":""),null);
             if(app.plan.steps().isEmpty())add(null,"No crafts remaining","Collect the missing materials or add a target.",null);

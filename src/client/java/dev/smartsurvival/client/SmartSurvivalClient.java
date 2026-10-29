@@ -144,14 +144,15 @@ public final class SmartSurvivalClient implements ClientModInitializer {
         for (Goal g : settings.presets.getOrDefault(settings.activePreset,List.of())) pack.add(progress(g));
         plan.missing().forEach((id,n) -> craft.add(new HudRenderer.Line(id,ItemsView.name(id),"Need "+n, HudRenderer.GOLD)));
         if (!settings.plans.isEmpty() && craft.isEmpty())
-            craft.add(new HudRenderer.Line(null,plan.steps().isEmpty() ? "Goals complete" : "Materials ready • craft next",HudRenderer.GREEN));
+            craft.add(new HudRenderer.Line(null,plan.limited() ? "Planner notice • open dashboard" : plan.steps().isEmpty() ? "Goals complete" : "Materials ready • craft next",plan.limited()?HudRenderer.GOLD:HudRenderer.GREEN));
         hudLines.put("Resources",goals); hudLines.put("Preparation",pack); hudLines.put("Crafting",craft);
         List<HudRenderer.Line> bag = new ArrayList<>();
         if (freeSlots <= settings.nearFullSlots) bag.add(new HudRenderer.Line(null,freeSlots+" inventory slots free",HudRenderer.GOLD));
         if (!advice.isEmpty()) bag.add(new HudRenderer.Line(null,advice.size()+" suggestions • open dashboard",HudRenderer.MUTED));
         hudLines.put("Inventory",bag);
-        hudLines.put("Survival",List.of(new HudRenderer.Line(null,
-            "Health "+(int)Math.ceil(client.player.getHealth())+" • Food "+client.player.getFoodData().getFoodLevel()+" • XP "+client.player.experienceLevel,HudRenderer.WHITE)));
+        var survival=List.of(new HudRenderer.Line(null,
+            "Health "+(int)Math.ceil(client.player.getHealth())+" • Food "+client.player.getFoodData().getFoodLevel()+" • XP "+client.player.experienceLevel,HudRenderer.WHITE));
+        if(!survival.equals(hudLines.put("Survival",survival))) revision++;
     }
     private HudRenderer.Line progress(Goal g) {
         int have = counts.getOrDefault(g.item(),0), missing = g.missing(have);

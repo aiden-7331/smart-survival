@@ -29,6 +29,11 @@ public final class SurvivalClientTest implements FabricClientGameTest {
                 check(!app.catalog.planner().recipes("minecraft:crafting_table").isEmpty(),"Synced recipe book");
                 check(app.plan.missing().isEmpty(),"Recursive crafting from carried logs");
                 check(!app.plan.steps().isEmpty(),"Crafting steps");
+                long oldRevision=app.revision;
+                float oldHealth=mc.player.getHealth();
+                mc.player.setHealth(oldHealth-2);app.refresh(mc);
+                check(app.revision>oldRevision,"Survival display refreshes without inventory changes");
+                mc.player.setHealth(oldHealth);app.refresh(mc);
             });
             context.setScreen(()->new DashboardScreen(SmartSurvivalClient.INSTANCE));
             context.waitTicks(5);context.takeScreenshot("dashboard-home");
