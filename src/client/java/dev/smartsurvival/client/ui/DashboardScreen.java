@@ -32,7 +32,7 @@ public final class DashboardScreen extends PanelScreen {
             case 5 -> settings();
             default -> {}
         }
-        int perPage=Math.max(1,(height-146)/34);
+        int perPage=Math.max(1,(height-134)/34);
         page=Math.min(page,Math.max(0,(entries.size()-1)/perPage));
         int from=page*perPage,to=Math.min(entries.size(),from+perPage);
         visible=List.copyOf(entries.subList(from,to));
@@ -125,7 +125,7 @@ public final class DashboardScreen extends PanelScreen {
         button(new String[]{"Carried items","Suggestions","Favourites"}[mode%3],left+10,73,110,()->{mode=(mode+1)%3;page=0;rebuild();});
         button("Favourite item",left+126,73,112,()->minecraft.gui.setScreen(new ItemPickerScreen(this,"Choose a favourite",id->true,g->{app.settings.favorites.add(g.item());app.changed();},new Goal("minecraft:diamond",1))));
         if(mode==1) {
-            for(var a:app.advice)add(a.item(),ItemsView.name(a.item()),a.reason(),null);
+            for(var a:app.advice)entries.add(new Row(a.item(),ItemsView.name(a.item()),a.reason(),HudRenderer.GOLD,null,null,null));
             if(app.advice.isEmpty())add(null,"Nothing to suggest","Favourites and special items are excluded from surplus advice.",null);
         } else {
             var ids=mode==2?new TreeSet<>(app.settings.favorites):new TreeSet<>(app.counts.keySet());
@@ -152,7 +152,7 @@ public final class DashboardScreen extends PanelScreen {
     private void goalRow(List<Goal> list,Goal goal,boolean plan) {
         int have=app.counts.getOrDefault(goal.item(),0);
         String detail=have+" carried / "+goal.amount()+" goal • "+goal.missing(have)+" missing";
-        entries.add(new Row(goal.item(),ItemsView.name(goal.item())+" × "+goal.amount(),detail,goal.missing(have)==0?HudRenderer.GREEN:HudRenderer.WHITE,()->pick(list,goal,plan),"Remove",()->{list.remove(goal);change();}));
+        entries.add(new Row(goal.item(),ItemsView.name(goal.item())+" × "+goal.amount(),detail,goal.missing(have)==0?HudRenderer.GREEN:HudRenderer.GOLD,()->pick(list,goal,plan),"Remove",()->{list.remove(goal);change();}));
         if(plan) {
             var routes=app.catalog.planner().recipes(goal.item());
             if(!routes.isEmpty()) {
@@ -182,10 +182,10 @@ public final class DashboardScreen extends PanelScreen {
             Row r=visible.get(i);int y=100+i*34;
             if(r.item!=null)g.item(ItemsView.stack(r.item),left+10,y+2);
             if(r.action==null)g.text(font,fit(r.title,panelWidth-(r.secondary==null?40:94)),left+30,y+3,r.color,false);
-            g.text(font,fit(r.detail,panelWidth-40),left+30,y+23,HudRenderer.MUTED,false);
+            g.text(font,fit(r.detail,panelWidth-40),left+30,y+23,r.color==HudRenderer.WHITE?HudRenderer.MUTED:r.color,false);
             if(my>=y+21&&my<y+33&&mx>=left&&mx<left+panelWidth)g.setTooltipForNextFrame(Component.literal(r.detail),mx,my);
         }
-        int perPage=Math.max(1,(height-146)/34);
+        int perPage=Math.max(1,(height-134)/34);
         g.text(font,(page+1)+" / "+Math.max(1,(entries.size()+perPage-1)/perPage),left+80,height-29,HudRenderer.MUTED,false);
     }
 }

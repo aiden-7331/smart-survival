@@ -72,8 +72,8 @@ public final class Settings {
         Map<String, Widget> map = new LinkedHashMap<>();
         map.put("Resources", new Widget(0.02, 0.05));
         map.put("Preparation", new Widget(0.98, 0.05));
-        map.put("Crafting", new Widget(0.02, 0.42));
-        map.put("Inventory", new Widget(0.98, 0.50));
+        map.put("Crafting", new Widget(0.02, 0.64));
+        map.put("Inventory", new Widget(0.98, 0.60));
         map.put("Survival", new Widget(0.02, 0.94));
         map.get("Preparation").enabled = false;
         map.get("Crafting").enabled = false;

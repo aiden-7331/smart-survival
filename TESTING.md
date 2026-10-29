@@ -10,8 +10,17 @@ The project is developed and built on GitHub. Automated checks run on GitHub Act
 - Explicit recipe routes, conversion cycles, unknown recipes and million-item targets.
 - Settings round trips, corruption backups, future-schema preservation, value normalization, previous-good backups and failed writes.
 - Minecraft client startup, synced recipe reading, live inventory counts and crafting against carried materials.
-- Dashboard/HUD screenshots at normal and compact window sizes.
+- Dashboard item search and goal creation, custom preset creation, actual HUD dragging and screenshots at normal and compact window sizes.
+- Manual hotbar, container and cursor drop cancellation for favourites.
+- Equipped/offhand inventory updates and favourite finished crafting targets.
+- Separate dedicated-server connection and synced recipe planning.
 - Client disconnect cleanup and settings reload.
+
+## Verified baseline
+
+[Run 6](https://github.com/aiden-7331/smart-survival/actions/runs/40860440324) passed on 29 October 2026: 26 unit tests (15 planner, 5 inventory, 6 settings), full JAR compilation and the Minecraft client integration scenario, including the separate server connection. Subsequent release changes must pass the same checks. Tests run with Java 25 and software-rendered Minecraft 26.3 on Ubuntu 24.04.
+
+Visual review of run 7 confirmed legible dashboard controls and separate resource quantities at 854×480 and 640×480; it also prompted smaller responsive HUD sizing and extra compact dashboard capacity. Screenshots are generated test evidence and included in Actions artifacts. They are also emitted into the verification log for inspection. Game tests and their test-only server commands are excluded from the distributed JAR.
 
 ## Release gate
 

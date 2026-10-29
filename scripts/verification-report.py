@@ -24,3 +24,23 @@ for folder in (Path("build/run"), Path("run")):
         for offset in range(0, len(encoded), 2048):
             print("SCREENSHOT_DATA " + encoded[offset:offset+2048], flush=True)
         print("SCREENSHOT_END " + path.name, flush=True)
+
+# Verify the artifact users install, including metadata and absence of test code.
+import hashlib
+import json
+import zipfile
+
+jars = [p for p in Path("build/libs").glob("smart-survival-*.jar") if not p.name.endswith("-sources.jar")]
+if len(jars) != 1:
+    raise SystemExit("Expected exactly one installable mod JAR")
+jar = jars[0]
+with zipfile.ZipFile(jar) as archive:
+    names = archive.namelist()
+    metadata = json.loads(archive.read("fabric.mod.json"))
+    assert metadata["environment"] == "client"
+    assert metadata["id"] == "smart-survival"
+    assert "dev/smartsurvival/client/SmartSurvivalClient.class" in names
+    assert not any("/test/" in n or n.endswith("Test.class") for n in names)
+    assert "smart-survival.client.mixins.json" in names
+print("RELEASE_JAR", jar.name, "version", metadata["version"], "bytes", jar.stat().st_size, flush=True)
+print("RELEASE_SHA256", hashlib.sha256(jar.read_bytes()).hexdigest(), flush=True)

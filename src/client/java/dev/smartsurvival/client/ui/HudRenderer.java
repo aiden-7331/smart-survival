@@ -16,13 +16,15 @@ public final class HudRenderer {
     }
     private HudRenderer() {}
     public static Bounds bounds(String name, Settings.Widget config, int width, int height, int lines) {
-        float scale = (float)Math.min(config.scale,Math.min(width/198.0,Math.max(0.5,(height-28)/132.0)));
+        float scale = (float)Math.min(config.scale*Math.min(1.0,width/480.0),Math.min(width/198.0,Math.max(0.5,(height-28)/132.0)));
         int w = Math.round(190*scale), h = Math.round((24+Math.min(4,Math.max(1,lines))*24+(lines>4?12:0))*scale);
         return new Bounds((int)Math.round(config.x*Math.max(0,width-w)),(int)Math.round(config.y*Math.max(0,height-h)),w,h,scale);
     }
     public static void drawAll(GuiGraphicsExtractor g, SmartSurvivalClient app, boolean edit, String selected) {
         var font = Minecraft.getInstance().font;
-        for (String name : Settings.WIDGET_NAMES) {
+        var drawOrder = new ArrayList<>(Settings.WIDGET_NAMES);
+        if(edit && selected!=null && drawOrder.remove(selected)) drawOrder.add(selected);
+        for (String name : drawOrder) {
             var config = app.settings.widgets.get(name);
             var lines = app.lines(name);
             if (!edit && (!config.enabled || lines.isEmpty())) continue;

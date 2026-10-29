@@ -4,13 +4,13 @@
 
 Smart Survival is a lightweight, client-side Fabric companion for Minecraft Java Edition **26.3**. Pin materials for a build, prepare for a trip, see what your carried supplies can craft, and keep a few useful reminders on your HUD.
 
-[Build checks](https://github.com/aiden-7331/smart-survival/actions) · [Downloads](https://github.com/aiden-7331/smart-survival/releases) · [Report a problem](https://github.com/aiden-7331/smart-survival/issues)
+[Build checks](https://github.com/aiden-7331/smart-survival/actions) · [Download builds](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml) · [Report a problem](https://github.com/aiden-7331/smart-survival/issues)
 
 ## What it does
 
 - **Resource goals:** search items by name or identifier, choose a target up to 1,000,000, and see carried / target / missing counts. Edit and remove multiple goals.
 - **Adventure preparation:** Mining, Exploring, Building and Fighting checklists. Add or remove supplies; create, duplicate, rename and delete your own presets.
-- **Inventory assistant:** a configurable near-full threshold, conservative duplicate-tool and partial-stack suggestions, and favourite item types.
+- **Inventory assistant:** a configurable near-full threshold, amber duplicate-tool and partial-stack suggestions, and favourite item types.
 - **Crafting planner:** recursively expands supported recipes from your synced recipe book. Handles ingredient alternatives, recipe alternatives, output batch sizes, existing intermediates and surplus outputs. All targets share one material budget.
 - **Survival dashboard:** six compact tabs with inventory, health, food and experience information. Lists are paginated and scrollable.
 - **HUD editor:** independently show, hide, drag, scale and adjust the background opacity of five widgets. Positions are stored as proportions and clamped to the visible GUI.
@@ -23,6 +23,8 @@ The mod never crafts, sorts, deletes or moves items for you. It does not query c
 2. Install [Fabric Loader](https://fabricmc.net/use/installer/) **0.20.1 or newer** for that version.
 3. Put [Fabric API](https://modrinth.com/mod/fabric-api) **0.165.0+26.3 or newer for 26.3** and the Smart Survival release JAR into your instance's `mods` folder.
 4. Start the Fabric profile and join a world. Press **K**.
+
+Download from the latest **successful** run on the [Build and test page](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml): open the run, select **smart-survival-build** under Artifacts, unzip it and use `build/libs/smart-survival-1.0.0.jar`. GitHub requires sign-in for artifact downloads. These are installable builds; a separate distribution-platform listing is not required.
 
 Use the normal `smart-survival-<version>.jar`; the `-sources.jar` is for developers. Install on the client only. Friends and multiplayer servers do not need Smart Survival.
 
@@ -80,7 +82,7 @@ Change these under **Options → Controls → Key Binds → Smart Survival**. No
 
 ## Settings and privacy
 
-Preferences, goals, recipes choices, favourite item types and presets are stored in `config/smart-survival.json`. They are shared across worlds on the same installation; there is no per-server history or tracking.
+Preferences, goals, recipe choices, favourite item types and presets are stored in `config/smart-survival.json`. They are shared across worlds on the same installation; there is no per-server history or tracking.
 
 Writes use a temporary file and atomic replacement where supported. The preceding file is retained as `.bak`. Malformed files are copied to a timestamped `.corrupt-*` file before defaults can be saved. Settings from a future schema are left untouched and saving is disabled. Save failures appear in the dashboard.
 
