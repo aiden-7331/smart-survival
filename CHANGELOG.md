@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 — Next-needed resource goals
+
+- Automatically skip completed Resources and Preparation goals on the HUD, promoting the next unfinished items in saved order.
+- Show an all-complete status when no supplies remain missing.
+- Preserve completed goals in the dashboard; they return to the HUD if carried supplies fall below the target.
+- Add in-game coverage for six-item queues, promotion beyond the four visible rows, completion and reopening after spending.
+
+
 ## 1.0.2 — Quantity editing and resource refresh
 
 - Add explicit Save and Cancel controls to item/quantity editors across goals, crafting plans and preparation checklists.

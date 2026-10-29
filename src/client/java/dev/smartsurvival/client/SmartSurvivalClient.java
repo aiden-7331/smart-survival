@@ -141,9 +141,9 @@ public final class SmartSurvivalClient implements ClientModInitializer {
         rebuildHud(client);
     }
     private void rebuildHud(Minecraft client) {
-        List<HudRenderer.Line> goals = new ArrayList<>(), pack = new ArrayList<>(), craft = new ArrayList<>();
-        for (Goal g : settings.goals) goals.add(progress(g));
-        for (Goal g : settings.presets.getOrDefault(settings.activePreset,List.of())) pack.add(progress(g));
+        List<HudRenderer.Line> goals = pendingGoalLines(settings.goals);
+        List<HudRenderer.Line> pack = pendingGoalLines(settings.presets.getOrDefault(settings.activePreset,List.of()));
+        List<HudRenderer.Line> craft = new ArrayList<>();
         plan.missing().forEach((id,n) -> craft.add(new HudRenderer.Line(id,ItemsView.name(id),"Need "+n, HudRenderer.GOLD)));
         if (!settings.plans.isEmpty() && craft.isEmpty())
             craft.add(new HudRenderer.Line(null,plan.limited() ? "Planner notice • open dashboard" : plan.steps().isEmpty() ? "Goals complete" : "Materials ready • craft next",plan.limited()?HudRenderer.GOLD:HudRenderer.GREEN));
@@ -155,6 +155,14 @@ public final class SmartSurvivalClient implements ClientModInitializer {
         var survival=List.of(new HudRenderer.Line(null,
             "Health "+(int)Math.ceil(client.player.getHealth())+" • Food "+client.player.getFoodData().getFoodLevel()+" • XP "+client.player.experienceLevel,HudRenderer.WHITE));
         if(!survival.equals(hudLines.put("Survival",survival))) revision++;
+    }
+    private List<HudRenderer.Line> pendingGoalLines(List<Goal> savedGoals) {
+        List<HudRenderer.Line> lines=new ArrayList<>();
+        for(Goal goal:savedGoals)
+            if(goal.missing(counts.getOrDefault(goal.item(),0))>0)lines.add(progress(goal));
+        if(!savedGoals.isEmpty() && lines.isEmpty())
+            lines.add(new HudRenderer.Line(null,"All goals complete",HudRenderer.GREEN));
+        return lines;
     }
     private HudRenderer.Line progress(Goal g) {
         int have = counts.getOrDefault(g.item(),0), missing = g.missing(have);

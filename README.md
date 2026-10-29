@@ -24,7 +24,7 @@ The mod never crafts, sorts, deletes or moves items for you. It does not query c
 3. Put [Fabric API](https://modrinth.com/mod/fabric-api) **0.165.0+26.3 or newer for 26.3** and the Smart Survival release JAR into your instance's `mods` folder.
 4. Start the Fabric profile and join a world. Press **K**.
 
-Download from the latest **successful** run on the [Build and test page](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml): open the run, select **smart-survival-build** under Artifacts, unzip it and use `build/libs/smart-survival-1.0.2.jar`. GitHub requires sign-in for artifact downloads. These are installable builds; a separate distribution-platform listing is not required.
+Download from the latest **successful** run on the [Build and test page](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml): open the run, select **smart-survival-build** under Artifacts, unzip it and use `build/libs/smart-survival-1.0.3.jar`. GitHub requires sign-in for artifact downloads. These are installable builds; a separate distribution-platform listing is not required.
 
 Use the normal `smart-survival-<version>.jar`; the `-sources.jar` is for developers. Install on the client only. Friends and multiplayer servers do not need Smart Survival.
 
@@ -71,7 +71,7 @@ Drop protection blocks manual hotbar and container drops while enabled. Unfavour
 
 ### Arrange the HUD
 
-Open **Home / Setup → Edit HUD**. Click a widget, drag it, and use **Scale ±**, **Fade ±** and **Show/hide**. Changes save when a drag ends or the editor closes. Hidden widgets remain visible in the editor. Empty widgets are hidden during play. Each widget shows up to four entries and a remaining-entry count.
+Open **Home / Setup → Edit HUD**. Click a widget, drag it, and use **Scale ±**, **Fade ±** and **Show/hide**. Changes save when a drag ends or the editor closes. Hidden widgets remain visible in the editor. Empty widgets are hidden during play. Each widget shows up to four entries and a remaining-entry count. Resources and Preparation skip completed goals, so the next unfinished items move into view automatically. When everything is ready, the widget shows **All goals complete**. Completed goals remain in the dashboard and return to the HUD if you use or store those items.
 
 The HUD follows Minecraft's hide-interface behavior and is hidden behind menus. Defaults show resource goals and inventory advice; enable the other widgets as needed.
 

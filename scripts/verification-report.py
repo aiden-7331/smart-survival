@@ -7,7 +7,7 @@ for path in sorted(Path("build/test-results/test").glob("TEST-*.xml")):
     root = ET.parse(path).getroot()
     print("UNIT_TEST_RESULT", root.attrib, flush=True)
 
-wanted = {"dashboard-home.png", "dashboard-small.png", "hud-editor-small.png", "survival-hud.png", "quantity-editor-small.png", "acacia-resource-count.png"}
+wanted = {"dashboard-home.png", "dashboard-small.png", "hud-editor-small.png", "survival-hud.png", "quantity-editor-small.png", "acacia-resource-count.png", "next-resource-goals.png"}
 for folder in (Path("build/run"), Path("run")):
     if not folder.exists():
         continue

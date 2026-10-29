@@ -32,6 +32,10 @@ Version 1.0.2 includes a second Minecraft scenario using Acacia Boats, matching 
 
 The original Acacia Boat pickup/hotbar/removal scenario passed before the refresh change; the user's stuck-zero state has not been reproduced in the isolated test environment. The count refresh now runs independently of snapshot change detection. Modpack-specific behavior remains unverified.
 
+## Goal queue regression
+
+Version 1.0.3 extends the in-game scenario with six resource/preparation goals. Completing the first four must promote the fifth and sixth into the visible HUD. It also checks the all-complete state, retention of saved goals and reappearance after spending a required item. The user subsequently confirmed that the counter was working; no additional counter fix is claimed in 1.0.3.
+
 ## Release gate
 
 Compilation, unit tests and client integration tests must succeed for the release commit. Passing compilation alone is not treated as an in-game verification.

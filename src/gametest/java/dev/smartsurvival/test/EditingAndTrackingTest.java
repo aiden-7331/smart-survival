@@ -99,6 +99,51 @@ public final class EditingAndTrackingTest implements FabricClientGameTest {
                 check(app.lines("Resources").getFirst().detail().startsWith("3 / 9"),"Creative HUD count");
             });
             System.out.println("REGRESSION_PASS creative inventory and HUD counts");
+
+            // Completing visible goals promotes the next unfinished items into the HUD.
+            world.getServer().runCommand("clear @p");
+            context.waitTicks(30);
+            context.runOnClient(mc->{
+                var app=SmartSurvivalClient.INSTANCE;
+                var queue=java.util.List.of(new Goal("minecraft:acacia_boat",1),new Goal("minecraft:cobblestone",2),
+                    new Goal("minecraft:dirt",3),new Goal("minecraft:oak_log",4),new Goal("minecraft:torch",5),new Goal("minecraft:bread",6));
+                app.settings.goals=new java.util.ArrayList<>(queue);
+                app.settings.presets.put(app.settings.activePreset,new java.util.ArrayList<>(queue));
+                app.changed();
+            });
+            context.waitTicks(15);
+            context.runOnClient(mc->check(SmartSurvivalClient.INSTANCE.lines("Resources").size()==6,"Initial six-item queue"));
+            world.getServer().runCommand("give @p minecraft:acacia_boat 1");
+            world.getServer().runCommand("give @p minecraft:cobblestone 2");
+            world.getServer().runCommand("give @p minecraft:dirt 3");
+            world.getServer().runCommand("give @p minecraft:oak_log 4");
+            context.waitTicks(30);
+            context.runOnClient(mc->{
+                var app=SmartSurvivalClient.INSTANCE;
+                for(String widget:java.util.List.of("Resources","Preparation")) {
+                    var ids=app.lines(widget).stream().map(HudRenderer.Line::item).toList();
+                    check(ids.equals(java.util.List.of("minecraft:torch","minecraft:bread")),"Next unfinished items promoted in "+widget+": "+ids);
+                }
+                check(app.settings.goals.size()==6 && app.store.load().goals.size()==6,"Completed goals remain saved");
+            });
+            context.takeScreenshot("next-resource-goals");
+            world.getServer().runCommand("give @p minecraft:torch 5");
+            world.getServer().runCommand("give @p minecraft:bread 6");
+            context.waitTicks(30);
+            context.runOnClient(mc->{
+                for(String widget:java.util.List.of("Resources","Preparation")) {
+                    var lines=SmartSurvivalClient.INSTANCE.lines(widget);
+                    check(lines.size()==1 && lines.getFirst().item()==null && lines.getFirst().text().equals("All goals complete"),"All-complete status in "+widget);
+                }
+            });
+            world.getServer().runCommand("clear @p minecraft:torch 1");
+            context.waitTicks(30);
+            context.runOnClient(mc->{
+                var lines=SmartSurvivalClient.INSTANCE.lines("Resources");
+                check(lines.size()==1 && "minecraft:torch".equals(lines.getFirst().item()),"Spent resource returns to queue");
+                check(lines.getFirst().detail().startsWith("4 / 5"),"Reopened goal uses current inventory");
+            });
+            System.out.println("REGRESSION_PASS automatic goal promotion, completion status, saved goals and reopening after spending");
         }
     }
     private static void assertBoatCount(ClientGameTestContext context,int expected) {
