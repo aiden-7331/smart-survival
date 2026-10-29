@@ -5,7 +5,8 @@
   "environment": "client",
   "entrypoints": {
     "fabric-client-gametest": [
-      "dev.smartsurvival.test.SurvivalClientTest"
+      "dev.smartsurvival.test.SurvivalClientTest",
+      "dev.smartsurvival.test.EditingAndTrackingTest"
     ]
   }
 }
