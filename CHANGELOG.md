@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.1 — Loader compatibility
+
+- Lower the declared and build-time Fabric Loader minimum from 0.20.1 to 0.19.5.
+- Run compilation, unit tests and Minecraft client integration tests against Loader 0.19.5 in CI.
+- Fix the startup dependency rejection for Minecraft 26.3 instances using Loader 0.19.5, including Modrinth App installations.
+- Preserve the existing settings format and mod behavior.
+
+
 ## 1.0.0 — 2026-10-29
 
 - Add multiple searchable resource goals and live carried-resource counts.

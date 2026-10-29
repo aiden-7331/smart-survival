@@ -22,6 +22,10 @@ The project is developed and built on GitHub. Automated checks run on GitHub Act
 
 Visual review of run 7 confirmed legible dashboard controls and separate resource quantities at 854×480 and 640×480; it also prompted smaller responsive HUD sizing and extra compact dashboard capacity. Screenshots are generated test evidence and included in Actions artifacts. They are also emitted into the verification log for inspection. Game tests and their test-only server commands are excluded from the distributed JAR.
 
+## Loader compatibility regression
+
+Version 1.0.1 builds and runs client integration tests using Fabric Loader 0.19.5. The production metadata accepts that same minimum; this avoids declaring support solely by editing the dependency check. The earlier 1.0.0 baseline used Loader 0.20.1. Check the successful 1.0.1 workflow before installing its artifact.
+
 ## Release gate
 
 Compilation, unit tests and client integration tests must succeed for the release commit. Passing compilation alone is not treated as an in-game verification.

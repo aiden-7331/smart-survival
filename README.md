@@ -20,15 +20,21 @@ The mod never crafts, sorts, deletes or moves items for you. It does not query c
 ## Install
 
 1. Install Java 25 and Minecraft Java Edition **26.3**.
-2. Install [Fabric Loader](https://fabricmc.net/use/installer/) **0.20.1 or newer** for that version.
+2. Install [Fabric Loader](https://fabricmc.net/use/installer/) **0.19.5 or newer** for that version.
 3. Put [Fabric API](https://modrinth.com/mod/fabric-api) **0.165.0+26.3 or newer for 26.3** and the Smart Survival release JAR into your instance's `mods` folder.
 4. Start the Fabric profile and join a world. Press **K**.
 
-Download from the latest **successful** run on the [Build and test page](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml): open the run, select **smart-survival-build** under Artifacts, unzip it and use `build/libs/smart-survival-1.0.0.jar`. GitHub requires sign-in for artifact downloads. These are installable builds; a separate distribution-platform listing is not required.
+Download from the latest **successful** run on the [Build and test page](https://github.com/aiden-7331/smart-survival/actions/workflows/build.yml): open the run, select **smart-survival-build** under Artifacts, unzip it and use `build/libs/smart-survival-1.0.1.jar`. GitHub requires sign-in for artifact downloads. These are installable builds; a separate distribution-platform listing is not required.
 
 Use the normal `smart-survival-<version>.jar`; the `-sources.jar` is for developers. Install on the client only. Friends and multiplayer servers do not need Smart Survival.
 
 Only 26.3 is targeted. Minecraft 1.21.x, 26.1 and 26.2 need separate ports; do not assume binary compatibility. No Mod Menu dependency is required.
+
+### Upgrading from 1.0.0
+
+Version 1.0.0 declared a Loader 0.20.1 minimum. Version 1.0.1 targets Loader 0.19.5 and runs the same full client test suite against it. Replace the old Smart Survival JAR; keep only one version in your instance's `mods` folder. Your saved goals and settings remain compatible.
+
+In the Modrinth App, select your instance and use its folder button to open the instance directory, then replace the JAR in `mods`. Keep Minecraft 26.3 and the matching Fabric API installed.
 
 ## Quick start
 
@@ -112,7 +118,7 @@ LIBGL_ALWAYS_SOFTWARE=true SDL_VIDEODRIVER=x11 xvfb-run -a ./gradlew runClientGa
 
 The GitHub Actions workflow builds the JAR, runs unit tests and starts a Minecraft client with an isolated test world. Artifacts contain build outputs, reports and available game-test screenshots. See [TESTING.md](TESTING.md) for the verification record and remaining manual checks.
 
-Dependency pins: Minecraft 26.3, Fabric Loader 0.20.1, Fabric API 0.165.0+26.3, Loom 1.19.3, Gradle 9.8.2, Java 25. Minecraft 26.3 ships unobfuscated names, so there is no Yarn or remapping dependency. Versions were checked against [Fabric's official 26.3 example](https://github.com/FabricMC/fabric-example-mod/tree/26.3) and published metadata on 28 October 2026; CI resolves and compiles the exact pins.
+Dependency pins: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.165.0+26.3, Loom 1.19.3, Gradle 9.8.2, Java 25. Minecraft 26.3 ships unobfuscated names, so there is no Yarn or remapping dependency. Versions were checked against [Fabric's official 26.3 example](https://github.com/FabricMC/fabric-example-mod/tree/26.3) and published metadata on 28 October 2026; CI resolves and compiles the exact pins.
 
 ## Architecture
 
