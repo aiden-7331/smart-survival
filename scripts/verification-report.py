@@ -12,7 +12,7 @@ for folder in (Path("build/run"), Path("run")):
     if not folder.exists():
         continue
     for path in sorted(folder.rglob("*.png")):
-        if path.name not in wanted:
+        if not any(path.name.endswith(name) for name in wanted):
             continue
         data = path.read_bytes()
         if len(data) > 2_000_000:

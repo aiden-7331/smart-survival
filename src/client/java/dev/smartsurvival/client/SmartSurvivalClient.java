@@ -142,7 +142,7 @@ public final class SmartSurvivalClient implements ClientModInitializer {
         List<HudRenderer.Line> goals = new ArrayList<>(), pack = new ArrayList<>(), craft = new ArrayList<>();
         for (Goal g : settings.goals) goals.add(progress(g));
         for (Goal g : settings.presets.getOrDefault(settings.activePreset,List.of())) pack.add(progress(g));
-        plan.missing().forEach((id,n) -> craft.add(new HudRenderer.Line(id,ItemsView.name(id)+"  -"+n, HudRenderer.GOLD)));
+        plan.missing().forEach((id,n) -> craft.add(new HudRenderer.Line(id,ItemsView.name(id),"Need "+n, HudRenderer.GOLD)));
         if (!settings.plans.isEmpty() && craft.isEmpty())
             craft.add(new HudRenderer.Line(null,plan.steps().isEmpty() ? "Goals complete" : "Materials ready • craft next",HudRenderer.GREEN));
         hudLines.put("Resources",goals); hudLines.put("Preparation",pack); hudLines.put("Crafting",craft);
@@ -155,7 +155,7 @@ public final class SmartSurvivalClient implements ClientModInitializer {
     }
     private HudRenderer.Line progress(Goal g) {
         int have = counts.getOrDefault(g.item(),0), missing = g.missing(have);
-        return new HudRenderer.Line(g.item(),ItemsView.name(g.item())+" "+have+"/"+g.amount()+(missing>0?" (-"+missing+")":" ✓"),missing==0?HudRenderer.GREEN:HudRenderer.WHITE);
+        return new HudRenderer.Line(g.item(),ItemsView.name(g.item()),have+" / "+g.amount()+(missing>0?" • "+missing+" left":" ✓"),missing==0?HudRenderer.GREEN:HudRenderer.WHITE);
     }
     public List<HudRenderer.Line> lines(String widget) { return hudLines.getOrDefault(widget,List.of()); }
     public void changed() { dirty = true; store.save(settings); revision++; }
